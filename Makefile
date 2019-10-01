@@ -11,6 +11,7 @@ OBJ = \
     src/exits.o \
     src/portio.o \
     src/uart.o \
+    src/utils.o \
 
 
 TEST_OBJ = \

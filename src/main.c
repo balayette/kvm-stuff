@@ -6,11 +6,10 @@
 #include <sys/stat.h>
 #include "assert.h"
 #include <stdio.h>
+#include "utils.h"
 #include "log.h"
 #include "exits.h"
 #include "kvmw.h"
-
-#define PAGE_ALIGN(x) ((x + 4096) & ~(4096 - 1))
 
 void check_caps(struct kvmw *w)
 {
@@ -23,25 +22,6 @@ int usage(char *name)
 	fprintf(stderr, "usage: %s binary\n", name);
 	fprintf(stderr, "binary will be run in KVM.\n");
 	return 1;
-}
-
-void *map_file(char *filename, size_t *size)
-{
-	int fd = open(filename, O_RDONLY);
-	ASSERT(fd != -1, "Couldn't open the binary.");
-
-	struct stat buf;
-	ASSERT(fstat(fd, &buf) != -1, "Couldn't stat the binary.");
-
-	*size = PAGE_ALIGN(buf.st_size);
-
-	void *base =
-		mmap(NULL, *size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
-	ASSERT(base != MAP_FAILED, "Couldn't map the binary.");
-
-	close(fd);
-
-	return base;
 }
 
 int main(int argc, char *argv[])
