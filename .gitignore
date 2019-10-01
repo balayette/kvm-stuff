@@ -1,5 +1,6 @@
 *.o
 *.d
+*.binary
 TAGS
 tags
 main
