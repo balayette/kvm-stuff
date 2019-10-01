@@ -40,3 +40,11 @@ void vm_set_pmem(struct vm *vm, size_t guest_phys_addr, size_t size)
 				.userspace_addr = (size_t)vm->pmem });
 	ASSERT(ret != -1, "ioctl(KVM_SET_USER_MEMORY_REGION) failed");
 }
+
+int vm_portio_handler(struct vm *vm)
+{
+	struct kvm_run *r = vm->vcpu.run;
+
+	return portio_driver(&vm->portio, (struct io_request *)&r->io,
+			     (char *)r + r->io.data_offset);
+}

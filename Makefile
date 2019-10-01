@@ -8,6 +8,9 @@ OBJ = \
       src/vcpu.o \
       src/vm.o \
       src/kvmw.o \
+      src/exits.o \
+      src/portio.o \
+      src/uart.o \
 
 
 DEP = $(OBJ:.o=.d)

@@ -7,40 +7,10 @@
 #include "assert.h"
 #include <stdio.h>
 #include "log.h"
+#include "exits.h"
 #include "kvmw.h"
 
 #define PAGE_ALIGN(x) ((x + 4096) & ~(4096 - 1))
-
-char *kvm_exit_codes[] = {
-	"KVM_EXIT_UNKNOWN0",
-	"KVM_EXIT_EXCEPTION1",
-	"KVM_EXIT_IO2",
-	"KVM_EXIT_HYPERCALL3",
-	"KVM_EXIT_DEBUG4",
-	"KVM_EXIT_HLT5",
-	"KVM_EXIT_MMIO6",
-	"KVM_EXIT_IRQ_WINDOW_OPEN7",
-	"KVM_EXIT_SHUTDOWN8",
-	"KVM_EXIT_FAIL_ENTRY9",
-	"KVM_EXIT_INTR10",
-	"KVM_EXIT_SET_TPR11",
-	"KVM_EXIT_TPR_ACCESS12",
-	"KVM_EXIT_S390_SIEIC13",
-	"KVM_EXIT_S390_RESET14",
-	"KVM_EXIT_DCR15",
-	"KVM_EXIT_NMI16",
-	"KVM_EXIT_INTERNAL_ERROR17",
-	"KVM_EXIT_OSI18",
-	"KVM_EXIT_PAPR_HCALL",
-	"KVM_EXIT_S390_UCONTROL",
-	"KVM_EXIT_WATCHDOG21",
-	"KVM_EXIT_S390_TSCH22",
-	"KVM_EXIT_EPR23",
-	"KVM_EXIT_SYSTEM_EVENT24",
-	"KVM_EXIT_S390_STSI25",
-	"KVM_EXIT_IOAPIC_EOI26",
-	"KVM_EXIT_HYPERV27",
-};
 
 void check_caps(struct kvmw *w)
 {
@@ -109,12 +79,8 @@ int main(int argc, char *argv[])
 
 	for (;;) {
 		ioctl(v->cpu_fd, KVM_RUN, NULL);
-		int reason = v->run->exit_reason;
-		INFO("VM_EXIT: %s (%d)\n", kvm_exit_codes[reason], reason);
-		if (reason == KVM_EXIT_HLT) {
-			INFO("Reached hlt, goodbye!\n");
+		if (handle_vm_exit(&wr.vm))
 			break;
-		}
 	}
 
 	kvmw_close(&wr);
