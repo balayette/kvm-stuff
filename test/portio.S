@@ -10,8 +10,7 @@ main:
     mov $0x3f8, %edx
     add $5, %edx
     in  (%dx), %al
-    mov $0x20, %bl
-    cmp %al, %bl
+    cmp $0x60, %al
     jne .fail
     mov $0x41, %al
     mov $0x3f8, %edx
