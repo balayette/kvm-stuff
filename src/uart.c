@@ -6,7 +6,6 @@
 #define SERIAL_OUT(val)                                                        \
 	do {                                                                   \
 		printf("%c", (val));                                           \
-		fflush(stdout);                                                \
 	} while (0)
 
 static uint8_t uart_read(struct uart_state *uart, int port)

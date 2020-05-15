@@ -12,6 +12,8 @@ OBJ = \
     src/portio.o \
     src/uart.o \
     src/utils.o \
+    src/load.o \
+    src/gdt.o \
 
 
 TEST_OBJ = \
@@ -22,6 +24,10 @@ TEST_BINARY = $(notdir $(TEST_OBJ:.o=.binary))
 
 DEP = $(OBJ:.o=.d)
 
+.PHONY: debug
+debug: CFLAGS += -Og
+debug: all
+
 .PHONY: opti
 opti: CFLAGS += -O3
 opti: all
@@ -30,10 +36,6 @@ opti: all
 lto: CFLAGS += -flto
 lto: LDFLAGS += -flto
 lto: opti
-
-.PHONY: debug
-debug: CFLAGS += -Og
-debug: all
 
 .PHONY: all
 all: $(BINARY_OUT) $(TEST_BINARY)
@@ -47,6 +49,9 @@ test/%.o: test/%.S
 
 %.binary: test/%.o
 	objcopy -O binary $^ $@
+
+%.elf: test/%.o
+	gcc -T test/test.lds $^ -o $@
 
 .PHONY: clean
 clean:

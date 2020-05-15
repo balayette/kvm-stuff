@@ -16,7 +16,7 @@ struct kvmw kvmw_open(void)
 
 	int api_version = ioctl(ret.kvm_fd, KVM_GET_API_VERSION, NULL);
 	ASSERT(api_version != -1, "ioctl(KVM_GET_API_VERSION) failed");
-	ASSERT(api_version == 12, "API version mismatch");
+	ASSERT(api_version == KVM_API_VERSION, "API version mismatch");
 
 	SUCCESS("KVM API version: %d\n", api_version);
 

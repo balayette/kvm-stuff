@@ -8,7 +8,7 @@
 #define ASSERT(x, msg)                                                         \
 	do {                                                                   \
 		if (!(x)) {                                                    \
-			FAIL("assertion '%s' failed: %s.", #x, msg);           \
+			FAIL("assertion '%s' failed: %s\n", #x, msg);           \
 			exit(1);                                               \
 		}                                                              \
 	} while (0)

@@ -54,6 +54,18 @@ static int io_exit(struct vm *vm)
 	return vm_portio_handler(vm);
 }
 
+static int fail_entry(struct vm *vm)
+{
+	struct kvm_run *r = vm->vcpu.run;
+
+	uint64_t reason = r->fail_entry.hardware_entry_failure_reason;
+	if (reason == 0x80000021)
+		INFO("The guest entered an invalid state.\n");
+	else
+		INFO("0x%llx\n", r->fail_entry.hardware_entry_failure_reason);
+	return 1;
+}
+
 static int (*vm_exit_handlers[])(struct vm *vm) = {
 	[KVM_EXIT_UNKNOWN] = unhandled_vm_exit,
 	[KVM_EXIT_EXCEPTION] = unhandled_vm_exit,
@@ -64,7 +76,7 @@ static int (*vm_exit_handlers[])(struct vm *vm) = {
 	[KVM_EXIT_MMIO] = unhandled_vm_exit,
 	[KVM_EXIT_IRQ_WINDOW_OPEN] = unhandled_vm_exit,
 	[KVM_EXIT_SHUTDOWN] = unhandled_vm_exit,
-	[KVM_EXIT_FAIL_ENTRY] = unhandled_vm_exit,
+	[KVM_EXIT_FAIL_ENTRY] = fail_entry,
 	[KVM_EXIT_INTR] = unhandled_vm_exit,
 	[KVM_EXIT_SET_TPR] = unhandled_vm_exit,
 	[KVM_EXIT_TPR_ACCESS] = unhandled_vm_exit,
@@ -89,6 +101,9 @@ int handle_vm_exit(struct vm *vm)
 {
 	int reason = vm->vcpu.run->exit_reason;
 
-	INFO("VM_EXIT: %s (%d)\n", kvm_exit_codes[reason], reason);
+	struct kvm_regs regs = vcpu_get_regs(&vm->vcpu);
+
+	INFO("VM_EXIT: [0x%llx] %s (%d)\n", regs.rip, kvm_exit_codes[reason],
+	     reason);
 	return vm_exit_handlers[reason](vm);
 }

@@ -13,6 +13,8 @@ int portio_driver(struct portio *portio, struct io_request *io, void *data)
 
 	if (io->port >= COM1 && io->port <= COM1 + 7)
 		return uart_driver(&portio->uart, io, data);
+        else
+                return 1;
 
 	return 0;
 }
